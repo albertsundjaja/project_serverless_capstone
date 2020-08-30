@@ -51,7 +51,7 @@ export class JournalAccess {
         return await this.docClient.query({
             TableName: this.journalTable,
             IndexName: this.createdAtIndex,
-            KeyConditionExpression: 'createdAt >= :createdAt',
+            KeyConditionExpression: 'createdAt = :createdAt',
             ExpressionAttributeValues: {
                 ':createdAt': startDate
             }

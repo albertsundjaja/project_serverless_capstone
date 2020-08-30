@@ -3,6 +3,7 @@ import * as uuid from 'uuid';
 
 import { JournalItem } from '../models/JournalItem'
 import { TodoUpdate } from '../models/TodoUpdate'
+import * as moment from 'moment'
 
 const journalAccess = new JournalAccess()
 
@@ -10,14 +11,14 @@ export async function createJournal(
     newJournal,
     userId
 ): Promise<JournalItem> {
-    const now = new Date().toISOString()
-        const journalId = uuid.v4()
-        const journal: JournalItem = {
-            ...newJournal,
-              userId: userId,
-              todoId: journalId,
-              createdAt: now
-          }
+    const now = moment().format('YYYYMMDD')
+    const journalId = uuid.v4()
+    const journal: JournalItem = {
+        ...newJournal,
+            userId: userId,
+            journalId,
+            createdAt: now
+        }
     return await journalAccess.createJournal(journal)
 }
 
@@ -30,7 +31,7 @@ export async function getJournals(userId) {
 }
 
 export async function getPublicJournals() {
-    const startDate = new Date(new Date().getTime() - (1 * 24 * 3600 * 1000))
+    const startDate = moment().format('YYYYMMDD')
     return await journalAccess.getPublicJournals(startDate)
 }   
 

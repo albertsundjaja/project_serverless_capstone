@@ -1,11 +1,11 @@
 service:
-  name: serverless-todo-app
+  name: journal-app
 
 plugins:
   - serverless-webpack
   - serverless-reqvalidator-plugin
   - serverless-iam-roles-per-function
-
+  - serverless-plugin-tracing
 provider:
   name: aws
   runtime: nodejs10.x
@@ -85,7 +85,7 @@ functions:
           authorizer: Auth
   
   # TODO: Configure this function
-  GetPublicJournals:
+  GetPubJournals:
     handler: src/lambda/http/getPublicJournals.handler
     iamRoleStatements:
       - Effect: Allow
@@ -113,7 +113,7 @@ functions:
     events:
       - http:
           method: post
-          path: todos
+          path: journals
           cors: true
           authorizer: Auth
           reqValidatorName: RequestBodyValidator
@@ -211,7 +211,7 @@ resources:
           - AttributeName: createdAt
             AttributeType: S
         KeySchema:
-          - AttributeName: todoId
+          - AttributeName: journalId
             KeyType: HASH
           - AttributeName: userId
             KeyType: RANGE
@@ -227,7 +227,7 @@ resources:
           - IndexName: ${self:provider.environment.JOURNAL_CREATEDAT_INDEX}
             KeySchema:
               - AttributeName: createdAt
-                KeyType: RANGE
+                KeyType: HASH
             Projection:
               ProjectionType: ALL
 

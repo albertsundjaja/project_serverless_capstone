@@ -6,7 +6,7 @@ import { getPublicJournals } from '../../businessLogic/journals'
 
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-
+  console.log(event.resource)
   const result = await getPublicJournals()
 
   const items = result.Items

@@ -1,5 +1,4 @@
-export interface JournalItem {
-  userId: string
+export interface Journal {
   journalId: string
   createdAt: string
   title: string

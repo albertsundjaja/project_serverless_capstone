@@ -1,27 +1,27 @@
 import { apiEndpoint } from '../config'
-import { Todo } from '../types/Todo';
-import { CreateTodoRequest } from '../types/CreateTodoRequest';
+import { Journal } from '../types/Journal';
+import { CreateJournalRequest } from '../types/CreateJournalRequest';
 import Axios from 'axios'
 import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
 
-export async function getTodos(idToken: string): Promise<Todo[]> {
-  console.log('Fetching todos')
+export async function getPublicJournals(idToken: string): Promise<Journal[]> {
+  console.log('Fetching journals')
 
-  const response = await Axios.get(`${apiEndpoint}/todos`, {
+  const response = await Axios.get(`${apiEndpoint}/public-journals`, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
     },
   })
-  console.log('Todos:', response.data)
+  console.log('Journals:', response.data)
   return response.data.items
 }
 
-export async function createTodo(
+export async function createJournal(
   idToken: string,
-  newTodo: CreateTodoRequest
-): Promise<Todo> {
-  const response = await Axios.post(`${apiEndpoint}/todos`,  JSON.stringify(newTodo), {
+  newJournal: CreateJournalRequest
+): Promise<Journal> {
+  const response = await Axios.post(`${apiEndpoint}/journals`,  JSON.stringify(newJournal), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`

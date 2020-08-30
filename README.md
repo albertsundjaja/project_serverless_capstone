@@ -6,7 +6,7 @@ The main function of the app is to create daily journal which other users can vi
 
 ## Functionality of the application
 
-This application will allow creating/removing/updating/fetching journal items. Each user can view everyone's journal but can only create/update/delete their own journal. Each user can optionally edit their public name and profile picture.
+This application will allow creating/removing/updating/fetching journal items. Each user can view everyone's journals that are created today (GMT time) but can only create/update/delete their own journal. Each user can optionally add image to their journal.
 
 ## Authentication
 
