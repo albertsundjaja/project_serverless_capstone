@@ -2,24 +2,12 @@ import 'source-map-support/register'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult, APIGatewayProxyHandler } from 'aws-lambda'
 
-import { parseUserId } from '../../auth/utils'
-
-import { createLogger } from '../../utils/logger'
-import { getTodos } from '../../businessLogic/todos'
-
-const logger = createLogger('auth')
+import { getPublicJournals } from '../../businessLogic/journals'
 
 
 export const handler: APIGatewayProxyHandler = async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-  // TODO: Get all TODO items for a current user
 
-  const authorization = event.headers.Authorization
-  const split = authorization.split(' ')
-  const jwtToken = split[1]
-  const userId = parseUserId(jwtToken)
-  logger.info(`${userId} request todo`)
-
-  const result = await getTodos(userId)
+  const result = await getPublicJournals()
 
   const items = result.Items
 

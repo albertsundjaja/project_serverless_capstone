@@ -2,32 +2,33 @@ import * as AWS  from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
-import { TodoItem } from '../models/TodoItem'
+import { JournalItem } from '../models/JournalItem'
 import { TodoUpdate } from '../models/TodoUpdate'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 const bucketName = process.env.IMAGES_S3_BUCKET
 
-export class TodosAccess {
+export class JournalAccess {
     constructor(
         private readonly docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),
-        private readonly todosTable = process.env.TODOS_TABLE,
-        private readonly userIdIndex = process.env.TODOS_SECONDARY_INDEX) {}
+        private readonly journalTable = process.env.JOURNAL_TABLE,
+        private readonly userIdIndex = process.env.JOURNAL_USERID_INDEX,
+        private readonly createdAtIndex = process.env.JOURNAL_CREATEDAT_INDEX ) {}
     
-    async createTodo(putTodo): Promise<TodoItem> {
+    async createJournal(journal): Promise<JournalItem> {
         
         await this.docClient.put({
-            TableName: this.todosTable,
-            Item: putTodo
+            TableName: this.journalTable,
+            Item: journal
           }).promise()
           
         
-        return putTodo
+        return journal
     }
 
     async deleteTodo(todoId, userId) {
         return await this.docClient.delete({
-            TableName: this.todosTable,
+            TableName: this.journalTable,
             Key: {
                 todoId,
                 userId
@@ -35,20 +36,31 @@ export class TodosAccess {
         }).promise()
     }
 
-    async getTodos(userId)  {
+    async getJournals(userId) {
         return await this.docClient.query({
-            TableName: this.todosTable,
+            TableName: this.journalTable,
             IndexName : this.userIdIndex,
             KeyConditionExpression: 'userId = :userId',
             ExpressionAttributeValues: {
                 ':userId': userId
             }
-          }).promise()
+            }).promise()
+    }
+
+    async getPublicJournals(startDate) {
+        return await this.docClient.query({
+            TableName: this.journalTable,
+            IndexName: this.createdAtIndex,
+            KeyConditionExpression: 'createdAt >= :createdAt',
+            ExpressionAttributeValues: {
+                ':createdAt': startDate
+            }
+        }).promise()
     }
 
     async updateTodo(todoId, userId, updatedTodo: TodoUpdate) {
         return await this.docClient.update({
-            TableName: this.todosTable,
+            TableName: this.journalTable,
             Key: {
                 todoId,
                 userId
@@ -72,7 +84,7 @@ export class TodosAccess {
 
     async updateUrl(todoId, userId) {
         return await this.docClient.update({
-            TableName: this.todosTable,
+            TableName: this.journalTable,
             Key: {
                 todoId,
                 userId
