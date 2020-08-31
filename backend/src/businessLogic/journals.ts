@@ -22,8 +22,8 @@ export async function createJournal(
     return await journalAccess.createJournal(journal)
 }
 
-export async function deleteTodo(todoId, userId) {
-    return await journalAccess.deleteTodo(todoId, userId)
+export async function deleteJournal(journalId, userId) {
+    return await journalAccess.deleteJournal(journalId, userId)
 }
 
 export async function getJournals(userId) {

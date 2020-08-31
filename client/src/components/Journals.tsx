@@ -17,7 +17,7 @@ import {
   MenuItemProps
 } from 'semantic-ui-react'
 
-import { createJournal, deleteTodo, getPublicJournals, patchJournal, getJournals } from '../api/journals-api'
+import { createJournal, deleteJournal, getPublicJournals, patchJournal, getJournals } from '../api/journals-api'
 import Auth from '../auth/Auth'
 import { Journal } from '../types/Journal'
 import { apiEndpoint } from '../config'
@@ -83,34 +83,17 @@ export class Journals extends React.PureComponent<JournalsProps, JournalsState> 
     }
   }
 
-  // onTodoDelete = async (todoId: string) => {
-  //   try {
-  //     await deleteTodo(this.props.auth.getIdToken(), todoId)
-  //     this.setState({
-  //       todos: this.state.todos.filter(todo => todo.todoId != todoId)
-  //     })
-  //   } catch {
-  //     alert('Todo deletion failed')
-  //   }
-  // }
-
-  // onTodoCheck = async (pos: number) => {
-  //   try {
-  //     const todo = this.state.todos[pos]
-  //     await patchTodo(this.props.auth.getIdToken(), todo.todoId, {
-  //       name: todo.name,
-  //       dueDate: todo.dueDate,
-  //       done: !todo.done
-  //     })
-  //     this.setState({
-  //       todos: update(this.state.todos, {
-  //         [pos]: { done: { $set: !todo.done } }
-  //       })
-  //     })
-  //   } catch {
-  //     alert('Todo deletion failed')
-  //   }
-  // }
+  onJournalDelete = async (journalId: string) => {
+    try {
+      await deleteJournal(this.props.auth.getIdToken(), journalId)
+      this.setState({
+        journals: this.state.journals.filter(journal => journal.journalId != journalId),
+        publicJournals: this.state.publicJournals.filter(journal => journal.journalId != journalId)
+      })
+    } catch {
+      alert('Journal deletion failed')
+    }
+  }
 
   async componentDidMount() {
     try {
@@ -197,12 +180,11 @@ export class Journals extends React.PureComponent<JournalsProps, JournalsState> 
 
   
 
-  renderTodos() {
+  renderJournals() {
     if (this.state.loadingJournals) {
       return this.renderLoading()
     }
 
-    // return this.renderTodosList()
   }
 
   renderLoading() {
@@ -246,7 +228,9 @@ export class Journals extends React.PureComponent<JournalsProps, JournalsState> 
                   
                 </Grid.Row>
               </Grid.Column>
-              {this.state.activeMenu == 'myJournal' && <Grid.Column width={1} floated="right">
+              {this.state.activeMenu == 'myJournal' && 
+              <React.Fragment>
+              <Grid.Column width={1} floated="right">
                 <Button
                   icon
                   color="blue"
@@ -255,6 +239,16 @@ export class Journals extends React.PureComponent<JournalsProps, JournalsState> 
                   <Icon name="pencil" />
                 </Button>
               </Grid.Column>
+              <Grid.Column width={1} floated="right">
+                <Button
+                  icon
+                  color="red"
+                  onClick={() => this.onJournalDelete(journal.journalId)}
+                >
+                  <Icon name="delete" />
+                </Button>
+              </Grid.Column>
+              </React.Fragment>
               }
               
               <Grid.Column width={16}>

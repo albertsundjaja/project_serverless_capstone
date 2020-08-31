@@ -26,11 +26,11 @@ export class JournalAccess {
         return journal
     }
 
-    async deleteTodo(todoId, userId) {
+    async deleteJournal(journalId, userId) {
         return await this.docClient.delete({
             TableName: this.journalTable,
             Key: {
-                todoId,
+                journalId,
                 userId
             }
         }).promise()

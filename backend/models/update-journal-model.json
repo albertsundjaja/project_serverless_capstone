@@ -1,18 +1,18 @@
 {
     "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "create-todo",
+    "title": "update-journal",
     "type": "object",
     "properties": {
-        "name": {
+        "title": {
             "type": "string"
         },
-        "dueDate": {
+        "content": {
             "type": "string"
         }
     },
     "required": [
-        "name",
-        "dueDate"
+        "title",
+        "content"
     ],
     "additionalProperties": false
 }

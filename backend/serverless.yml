@@ -25,48 +25,20 @@ provider:
       IMAGES_S3_BUCKET: serverless-journal-alb123123-images-${self:provider.stage}
       SIGNED_URL_EXPIRATION: 300
 
-  iamRoleStatements:
-    - Effect: "Allow" # Global xray permissions
-      Action:
-        - "xray:PutTraceSegments"
-        - "xray:PutTelemetryRecords"
-      Resource:
-        - "*"
-
-  # iamRoleStatements:
-  #   - Effect: Allow
-  #     Action:
-  #       - dynamodb:Scan
-  #       - dynamodb:PutItem
-  #       - dynamodb:GetItem
-  #       - dynamodb:UpdateItem
-  #       - dynamodb:DeleteItem
-  #       - dynamodb:Query
-  #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-  #   - Effect: Allow
-  #     Action:
-  #       - dynamodb:Query
-  #     Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_SECONDARY_INDEX}
-  #   - Effect: Allow
-  #     Action:
-  #       - s3:PutObject
-  #       - s3:GetObject
-  #     Resource: arn:aws:s3:::${self:provider.environment.IMAGES_S3_BUCKET}/*
-
 custom:
   documentation:
     api:
       info:
         version: v1.0.0
-        title: Todos API
-        description: Serverless application for todos
+        title: Journals API
+        description: Serverless application for journals
     models:
-      - name: CreateTodoRequest
+      - name: CreateJournalRequest
         contentType: application/json
-        schema: ${file(models/create-todo-model.json)}
-      - name: UpdateTodoRequest
+        schema: ${file(models/create-journal-model.json)}
+      - name: UpdateJournalRequest
         contentType: application/json
-        schema: ${file(models/update-todo-model.json)}
+        schema: ${file(models/update-journal-model.json)}
 
 functions:
 
@@ -171,21 +143,26 @@ functions:
             description: Update a journal
             requestModels:
               'application/json': UpdateJournalRequest
-
-  # # TODO: Configure this function
-  # DeleteTodo:
-  #   handler: src/lambda/http/deleteTodo.handler
-  #   iamRoleStatements:
-  #     - Effect: Allow
-  #       Action:
-  #         - dynamodb:DeleteItem
-  #       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-  #   events:
-  #     - http:
-  #         method: delete
-  #         path: todos/{todoId}
-  #         cors: true
-  #         authorizer: Auth
+  
+  DeleteJournal:
+    handler: src/lambda/http/deleteJournal.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.JOURNAL_TABLE}
+      - Effect: "Allow"
+        Action:
+          - "xray:PutTraceSegments"
+          - "xray:PutTelemetryRecords"
+        Resource:
+          - "*"
+    events:
+      - http:
+          method: delete
+          path: journals/{journalId}
+          cors: true
+          authorizer: Auth
 
   GenerateUploadUrl:
     handler: src/lambda/http/generateUploadUrl.handler
