@@ -148,7 +148,7 @@ export class EditJournal extends React.PureComponent<
             />
           </Form.Field>
           <Button
-            loading={this.state.uploadState !== UploadState.NoUpload}
+            loading={this.state.updateState}
             type="submit"
           >
             Update

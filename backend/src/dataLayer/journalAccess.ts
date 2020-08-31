@@ -78,17 +78,17 @@ export class JournalAccess {
         }).promise()
     }
 
-    async updateUrl(todoId, userId) {
+    async updateUrl(journalId, userId) {
         return await this.docClient.update({
             TableName: this.journalTable,
             Key: {
-                todoId,
+                journalId,
                 userId
             },
             AttributeUpdates: {
                 attachmentUrl: {
                     Action: 'PUT',
-                    Value: `https://${bucketName}.s3.amazonaws.com/${todoId}`
+                    Value: `https://${bucketName}.s3.amazonaws.com/${journalId}`
                 }
             }
         }).promise()

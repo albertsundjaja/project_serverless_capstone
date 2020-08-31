@@ -39,6 +39,6 @@ export async function updateJournal(journalId, userId, data : JournalUpdate) {
     return await journalAccess.updateJournal(journalId, userId, data)
 }
 
-export async function updateUrl(todoId, userId) {
-    return await journalAccess.updateUrl(todoId, userId)
+export async function updateUrl(journalId, userId) {
+    return await journalAccess.updateUrl(journalId, userId)
 }
