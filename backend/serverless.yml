@@ -123,26 +123,25 @@ functions:
             requestModels:
               'application/json': CreateJournalRequest
 
-  # # TODO: Configure this function
-  # UpdateTodo:
-  #   handler: src/lambda/http/updateTodo.handler
-  #   iamRoleStatements:
-  #     - Effect: Allow
-  #       Action:
-  #         - dynamodb:UpdateItem
-  #       Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
-  #   events:
-  #     - http:
-  #         method: patch
-  #         path: todos/{todoId}
-  #         cors: true
-  #         authorizer: Auth
-  #         reqValidatorName: RequestBodyValidator
-  #         documentation:
-  #           summary: Create a new group
-  #           description: Create a new group
-  #           requestModels:
-  #             'application/json': UpdateTodoRequest
+  UpdateJournal:
+    handler: src/lambda/http/updateJournal.handler
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.JOURNAL_TABLE}
+    events:
+      - http:
+          method: patch
+          path: journals/{journalId}
+          cors: true
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update a journal
+            description: Update a journal
+            requestModels:
+              'application/json': UpdateJournalRequest
 
   # # TODO: Configure this function
   # DeleteTodo:

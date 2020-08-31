@@ -2,7 +2,7 @@ import {JournalAccess} from '../dataLayer/journalAccess'
 import * as uuid from 'uuid';
 
 import { JournalItem } from '../models/JournalItem'
-import { TodoUpdate } from '../models/TodoUpdate'
+import { JournalUpdate } from '../models/JournalUpdate'
 import * as moment from 'moment'
 
 const journalAccess = new JournalAccess()
@@ -35,8 +35,8 @@ export async function getPublicJournals() {
     return await journalAccess.getPublicJournals(startDate)
 }   
 
-export async function updateTodo(todoId, userId, data : TodoUpdate) {
-    return await journalAccess.updateTodo(todoId, userId, data)
+export async function updateJournal(journalId, userId, data : JournalUpdate) {
+    return await journalAccess.updateJournal(journalId, userId, data)
 }
 
 export async function updateUrl(todoId, userId) {

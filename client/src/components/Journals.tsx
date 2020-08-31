@@ -17,11 +17,12 @@ import {
   MenuItemProps
 } from 'semantic-ui-react'
 
-import { createJournal, deleteTodo, getPublicJournals, patchTodo } from '../api/todos-api'
+import { createJournal, deleteTodo, getPublicJournals, patchJournal, getJournals } from '../api/journals-api'
 import Auth from '../auth/Auth'
 import { Journal } from '../types/Journal'
+import { apiEndpoint } from '../config'
 
-interface TodosProps {
+interface JournalsProps {
   auth: Auth
   history: History
 }
@@ -34,7 +35,7 @@ interface JournalsState {
   activeMenu: string
 }
 
-export class Todos extends React.PureComponent<TodosProps, JournalsState> {
+export class Journals extends React.PureComponent<JournalsProps, JournalsState> {
   state: JournalsState = {
     journals: [],
     publicJournals: [],
@@ -47,12 +48,23 @@ export class Todos extends React.PureComponent<TodosProps, JournalsState> {
     this.setState({ newJournalTitle: event.target.value })
   }
 
-  handleMenuClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, data: MenuItemProps) => {
-    this.setState({activeMenu: data.name ? data.name : ''})
+  handleMenuClick = async (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>, data: MenuItemProps) => {
+    this.setState({loadingJournals: true, activeMenu: data.name ? data.name : ''})
+    let journals:Journal[] = []
+    if (data.name && data.name == 'myJournal') {
+      try {
+        journals = await getJournals(this.props.auth.getIdToken())
+      }
+      catch (e) {
+        alert(`Failed to fetch journals: ${e.message}`)
+      }
+    }
+    this.setState({loadingJournals: false, journals})
+    
   }
 
-  onEditButtonClick = (journalId: string) => {
-    this.props.history.push(`/todos/${journalId}/edit`)
+  onEditButtonClick = (journalId: string, title: string) => {
+    this.props.history.push(`/journals/${journalId}/edit/${title}`)
   }
 
   onJournalCreate = async (event: React.ChangeEvent<HTMLButtonElement>) => {
@@ -131,7 +143,6 @@ export class Todos extends React.PureComponent<TodosProps, JournalsState> {
     }
     return (
         <Grid.Row>
-          {this.renderCreateJournalInput()}
           <Menu>
             <Menu.Item 
               active={this.state.activeMenu == 'allJournals'}
@@ -146,6 +157,7 @@ export class Todos extends React.PureComponent<TodosProps, JournalsState> {
                 My Journal
             </Menu.Item>
           </Menu>
+          {this.state.activeMenu == 'myJournal' && this.renderCreateJournalInput()}
         </Grid.Row>
     )
   }
@@ -159,12 +171,12 @@ export class Todos extends React.PureComponent<TodosProps, JournalsState> {
               color: 'teal',
               labelPosition: 'left',
               icon: 'add',
-              content: 'New task',
+              content: 'New Journal',
               onClick: this.onJournalCreate
             }}
             fluid
             actionPosition="left"
-            placeholder="To change the world..."
+            placeholder="Title"
             onChange={this.handleNameChange}
           />
         </Grid.Column>
@@ -204,22 +216,49 @@ export class Todos extends React.PureComponent<TodosProps, JournalsState> {
   }
 
   renderPublicJournalsList() {
+    let journals = []
+    if (!this.props.auth.isAuthenticated() || this.state.activeMenu == 'allJournals')
+    {
+      journals = this.state.publicJournals
+    } else {
+      journals = this.state.journals
+    }
     return (
       <Grid padded>
-        {this.state.publicJournals.map((journal, pos) => {
+        {journals.map((journal, pos) => {
           return (
             <Grid.Row key={journal.journalId}>
-              <Grid.Column width={10} verticalAlign="middle">
-                {journal.title}
+              <Grid.Column width={10}>
+                <Grid.Row>
+                  <Grid.Column width={12} verticalAlign="middle">
+                    <b>Title: {journal.title}</b>
+                  </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                  <Grid.Column width={12} floated="right">
+                    {journal.content}
+                  </Grid.Column>
+                </Grid.Row>
+                <Grid.Row>
+                  {journal.attachmentUrl && (
+                    <Image src={journal.attachmentUrl} size="small" wrapped />
+                  )}
+                  
+                </Grid.Row>
               </Grid.Column>
-              <Grid.Column width={3} floated="right">
-                {journal.content}
+              {this.state.activeMenu == 'myJournal' && <Grid.Column width={1} floated="right">
+                <Button
+                  icon
+                  color="blue"
+                  onClick={() => this.onEditButtonClick(journal.journalId, journal.title)}
+                >
+                  <Icon name="pencil" />
+                </Button>
               </Grid.Column>
-              {journal.attachmentUrl && (
-                <Image src={journal.attachmentUrl} size="small" wrapped />
-              )}
+              }
+              
               <Grid.Column width={16}>
-                <Divider />
+                  <Divider />
               </Grid.Column>
             </Grid.Row>
           )

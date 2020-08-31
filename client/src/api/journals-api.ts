@@ -2,12 +2,25 @@ import { apiEndpoint } from '../config'
 import { Journal } from '../types/Journal';
 import { CreateJournalRequest } from '../types/CreateJournalRequest';
 import Axios from 'axios'
-import { UpdateTodoRequest } from '../types/UpdateTodoRequest';
+import { UpdateJournalRequest } from '../types/UpdateJournalRequest';
 
 export async function getPublicJournals(idToken: string): Promise<Journal[]> {
-  console.log('Fetching journals')
+  console.log('Fetching public journals')
 
   const response = await Axios.get(`${apiEndpoint}/public-journals`, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`
+    },
+  })
+  console.log('Public Journals:', response.data)
+  return response.data.items
+}
+
+export async function getJournals(idToken: string): Promise<Journal[]> {
+  console.log('Fetching journals')
+
+  const response = await Axios.get(`${apiEndpoint}/journals`, {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`
@@ -30,12 +43,12 @@ export async function createJournal(
   return response.data.item
 }
 
-export async function patchTodo(
+export async function patchJournal(
   idToken: string,
-  todoId: string,
-  updatedTodo: UpdateTodoRequest
+  journalId: string,
+  updatedJournal: UpdateJournalRequest
 ): Promise<void> {
-  await Axios.patch(`${apiEndpoint}/todos/${todoId}`, JSON.stringify(updatedTodo), {
+  await Axios.patch(`${apiEndpoint}/journals/${journalId}`, JSON.stringify(updatedJournal), {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${idToken}`

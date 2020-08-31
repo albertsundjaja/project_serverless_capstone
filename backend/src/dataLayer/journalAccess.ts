@@ -3,7 +3,7 @@ import * as AWSXRay from 'aws-xray-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 
 import { JournalItem } from '../models/JournalItem'
-import { TodoUpdate } from '../models/TodoUpdate'
+import { JournalUpdate } from '../models/JournalUpdate'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 const bucketName = process.env.IMAGES_S3_BUCKET
@@ -58,25 +58,21 @@ export class JournalAccess {
         }).promise()
     }
 
-    async updateTodo(todoId, userId, updatedTodo: TodoUpdate) {
+    async updateJournal(journalId, userId, updatedJournal: JournalUpdate) {
         return await this.docClient.update({
             TableName: this.journalTable,
             Key: {
-                todoId,
+                journalId,
                 userId
             },
             AttributeUpdates: {
-                name: {
+                'title': {
                     Action: 'PUT',
-                    Value: updatedTodo.name
+                    Value: updatedJournal.title
                 },
-                dueDate: {
+                'content': {
                     Action: 'PUT',
-                    Value: updatedTodo.dueDate
-                },
-                done: {
-                    Action: 'PUT',
-                    Value: updatedTodo.done
+                    Value: updatedJournal.content
                 }
             }
         }).promise()
